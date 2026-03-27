@@ -81,8 +81,14 @@ logger = logging.getLogger(__name__)
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
-default_cache_dir = os.path.join(os.path.expanduser("~"), ".cache")
-CACHE_DIR = os.path.join(os.getenv("XDG_CACHE_HOME", default_cache_dir), "suno", "bark_v0")
+# Central model cache: respects HF_HOME / HF_HUB_CACHE env vars (set to ~/models/mlx/hub).
+# Falls back to ~/.cache/suno/bark_v0 if neither is set.
+_hf_home = os.getenv("HF_HOME") or os.getenv("HF_HUB_CACHE")
+if _hf_home:
+    CACHE_DIR = os.path.join(_hf_home, "suno", "bark_v0")
+else:
+    default_cache_dir = os.path.join(os.path.expanduser("~"), ".cache")
+    CACHE_DIR = os.path.join(os.getenv("XDG_CACHE_HOME", default_cache_dir), "suno", "bark_v0")
 
 
 def _cast_bool_env_var(s):
